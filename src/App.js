@@ -7,7 +7,7 @@ function App() {
   const [InputCur, setInputCur] = React.useState("USD");
   const [outpuCur, setOutputCur] = React.useState("CAD");
 
-  const [curData, setCurData] = React.useState({});
+  const [curData, setCurData] = React.useState("");
   const [error, setError] = React.useState("");
 
   React.useEffect(
@@ -30,8 +30,7 @@ function App() {
             throw new Error("Somethig went wrong while fetching movies!");
           }
           const data = await Api.json();
-          console.log("data", data);
-          setCurData(data);
+          setCurData(data?.rates[outpuCur]); // dynamic way of conversion
         } catch (error) {
           if (error.name !== "AbortError") {
             setError(error.message);
@@ -44,19 +43,19 @@ function App() {
     [inputVal, InputCur, outpuCur]
   );
 
-  function outputResult(output, data) {
-    switch (output) {
-      case "USD":
-        return data?.USD;
-      case "EUR":
-        return data?.EUR;
-      case "INR":
-        return data?.INR;
+  // function outputResult(output, data) {
+  //   switch (output) {
+  //     case "USD":
+  //       return data?.USD;
+  //     case "EUR":
+  //       return data?.EUR;
+  //     case "INR":
+  //       return data?.INR;
 
-      default:
-        return data?.CAD;
-    }
-  }
+  //     default:
+  //       return data?.CAD;
+  //   }
+  // }
 
   return (
     <div>
@@ -77,11 +76,10 @@ function App() {
         <option value='CAD'>CAD</option>
         <option value='INR'>INR</option>
       </select>
-      <p>
-        {InputCur === outpuCur
+      <p>{InputCur === outpuCur ? inputVal : curData}</p>
+      {/* {InputCur === outpuCur
           ? inputVal
-          : outputResult(outpuCur, curData?.rates)}
-      </p>
+          : outputResult(outpuCur, curData?.rates)} */}
     </div>
   );
 }
