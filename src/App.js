@@ -76,7 +76,11 @@ function App() {
         <option value='CAD'>CAD</option>
         <option value='INR'>INR</option>
       </select>
-      <p>{InputCur === outpuCur ? inputVal : curData}</p>
+      <p>
+        {InputCur === outpuCur
+          ? `${inputVal} ${outpuCur}`
+          : curData && ` ${curData} ${outpuCur}`}
+      </p>
       {/* {InputCur === outpuCur
           ? inputVal
           : outputResult(outpuCur, curData?.rates)} */}
