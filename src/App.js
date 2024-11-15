@@ -3,12 +3,13 @@ import React from "react";
 // https://api.frankfurter.app/latest?amount=100&from=EUR&to=USD
 
 function App() {
-  const [inputVal, setInputVal] = React.useState("1");
+  const [inputVal, setInputVal] = React.useState(1);
   const [InputCur, setInputCur] = React.useState("USD");
   const [outpuCur, setOutputCur] = React.useState("CAD");
 
   const [curData, setCurData] = React.useState("");
   const [error, setError] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(
     function () {
@@ -18,7 +19,7 @@ function App() {
       async function CurConvertApi() {
         try {
           setError("");
-
+          setIsLoading(true);
           const Api = await fetch(
             `https://api.frankfurter.app/latest?amount=${Number(
               inputVal
@@ -29,6 +30,7 @@ function App() {
           if (!Api?.ok) {
             throw new Error("Somethig went wrong while fetching movies!");
           }
+
           const data = await Api.json();
           setCurData(data?.rates[outpuCur]); // dynamic way of conversion
         } catch (error) {
@@ -36,8 +38,11 @@ function App() {
             setError(error.message);
           }
           setError(error.message);
+        } finally {
+          setIsLoading(false);
         }
       }
+      if (InputCur === outpuCur) return setCurData(inputVal);
       CurConvertApi();
     },
     [inputVal, InputCur, outpuCur]
@@ -63,23 +68,31 @@ function App() {
         type='text'
         value={inputVal}
         onChange={(e) => setInputVal(Number(e.target.value))}
+        disabled={isLoading}
       />
-      <select value={InputCur} onChange={(e) => setInputCur(e.target.value)}>
+      <select
+        value={InputCur}
+        onChange={(e) => setInputCur(e.target.value)}
+        disabled={isLoading}
+      >
         <option value='USD'>USD</option>
         <option value='EUR'>EUR</option>
         <option value='CAD'>CAD</option>
         <option value='INR'>INR</option>
       </select>
-      <select value={outpuCur} onChange={(e) => setOutputCur(e.target.value)}>
+      <select
+        value={outpuCur}
+        onChange={(e) => setOutputCur(e.target.value)}
+        disabled={isLoading}
+      >
         <option value='USD'>USD</option>
         <option value='EUR'>EUR</option>
         <option value='CAD'>CAD</option>
         <option value='INR'>INR</option>
       </select>
       <p>
-        {InputCur === outpuCur
-          ? `${inputVal} ${outpuCur}`
-          : curData && ` ${curData} ${outpuCur}`}
+        {isLoading && <>Loading</>}
+        {!isLoading && ` ${curData} ${outpuCur}`}
       </p>
       {/* {InputCur === outpuCur
           ? inputVal
